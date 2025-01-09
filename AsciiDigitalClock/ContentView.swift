@@ -13,21 +13,31 @@ struct ContentView: View {
     var asciiArt: String {
        AsciiClockBuilder(date: currentTime).generateAsciiClock()
     }
+    
+    var currentTimeFormatted: String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: currentTime)
+    }
 
     var body: some View {
         VStack {
             Spacer()
             Text(asciiArt)
-            .font(.system(.largeTitle, design: .monospaced))
-            .multilineTextAlignment(.leading)
-            .onAppear {
-                Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                    let newTime = Date()
-                    if(newTime != currentTime) {
-                        currentTime = newTime
+                .font(.system(.title, design: .monospaced))
+                .multilineTextAlignment(.leading)
+                .accessibilityLabel("The current time is \(currentTimeFormatted)")
+                .accessibilityHint("This is a digital representation of the current time")
+                .onAppear {
+                    Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                        let newTime = Date()
+                        
+                        if(newTime != currentTime) {
+                            currentTime = newTime
+                            UIAccessibility.post(notification: .announcement, argument: "The time is now \(currentTimeFormatted)")
+                        }
                     }
                 }
-            }
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
