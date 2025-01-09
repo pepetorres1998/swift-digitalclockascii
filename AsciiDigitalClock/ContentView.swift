@@ -8,15 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var currentTime: Date = Date()
+    
+    var asciiArt: String {
+       AsciiClockBuilder(date: currentTime).generateAsciiClock()
+    }
+
     var body: some View {
-        let date = Date()
-        let asciiArt = AsciiClockBuilder(date: date).generateAsciiClock()
-        
         VStack {
             Spacer()
             Text(asciiArt)
-            .font(.system(.title, design: .monospaced))
+            .font(.system(.largeTitle, design: .monospaced))
             .multilineTextAlignment(.leading)
+            .onAppear {
+                Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                    let newTime = Date()
+                    if(newTime != currentTime) {
+                        currentTime = newTime
+                    }
+                }
+            }
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
